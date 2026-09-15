@@ -1,0 +1,148 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-bg: #0a0e13;
+  --color-surface: #161b22;
+  --color-surface-2: #1b232d;
+  --color-line: #263039;
+  --color-neon: #22d3ee;
+  --color-up: #10b981;
+  --color-down: #ef4444;
+  --color-warn: #eab308;
+  --color-muted: #8b98a9;
+
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+}
+
+:root {
+  --tg-bg: #0a0e13;
+  --tg-text: #e6edf3;
+  --tg-hint: #8b98a9;
+  --tg-accent: #22d3ee;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+  body {
+    background: var(--tg-bg);
+    color: var(--tg-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: none;
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #2a3542 transparent;
+  }
+  button {
+    transition:
+      transform 0.12s ease,
+      filter 0.15s ease,
+      background-color 0.15s ease,
+      border-color 0.15s ease;
+  }
+  button:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+}
+
+@layer components {
+  /* Asosiy karta: glassmorphism + yumshoq neon */
+  .glass {
+    position: relative;
+    background:
+      linear-gradient(160deg, rgba(34, 211, 238, 0.07), rgba(255, 255, 255, 0) 42%),
+      linear-gradient(0deg, rgba(22, 27, 34, 0.92), rgba(22, 27, 34, 0.92));
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(56, 68, 84, 0.55);
+    border-radius: 16px;
+    box-shadow:
+      0 8px 24px -12px rgba(0, 0, 0, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .glow-neon {
+    box-shadow:
+      0 0 28px -10px rgba(34, 211, 238, 0.5),
+      0 8px 24px -12px rgba(0, 0, 0, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+  .glow-up {
+    box-shadow:
+      0 0 28px -10px rgba(16, 185, 129, 0.5),
+      0 8px 24px -12px rgba(0, 0, 0, 0.55);
+  }
+  .glow-down {
+    box-shadow:
+      0 0 28px -10px rgba(239, 68, 68, 0.45),
+      0 8px 24px -12px rgba(0, 0, 0, 0.55);
+  }
+
+  /* Raqamli hisob-kitob uchun */
+  .num {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  .text-glow-up {
+    text-shadow: 0 0 18px rgba(16, 185, 129, 0.55);
+  }
+  .text-glow-down {
+    text-shadow: 0 0 18px rgba(239, 68, 68, 0.5);
+  }
+  .text-glow-neon {
+    text-shadow: 0 0 18px rgba(34, 211, 238, 0.55);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 999px;
+    border: 1px solid rgba(56, 68, 84, 0.7);
+    background: rgba(27, 35, 45, 0.8);
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--tg-text);
+    white-space: nowrap;
+  }
+
+  .skeleton {
+    border-radius: 10px;
+    background: linear-gradient(100deg, #171d26 40%, #202936 50%, #171d26 60%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite linear;
+  }
+  @keyframes shimmer {
+    to {
+      background-position: -200% 0;
+    }
+  }
+
+  .bg-grid {
+    background-image:
+      linear-gradient(rgba(34, 211, 238, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34, 211, 238, 0.04) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-rise {
+  animation: rise 0.35s ease both;
+}
