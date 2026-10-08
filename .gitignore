@@ -1,15 +1,1 @@
-node_modules
-dist
-dist-ssr
-*.local
-.DS_Store
-npm-debug.log*
-
-# --- backend ---
-backend/.env
-backend/.venv/
-backend/data/
-backend/*.session
-*.session
-__pycache__/
-*.pyc
+*.bundle
