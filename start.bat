@@ -22,17 +22,16 @@ echo [3/4] Frontend build (dist/) ...
 call npm run build
 
 (echo VITE_API_URL=)>.env
-echo [4/4] Sayt ishga tushmoqda (port 80) ...
-start "NFT-Trader" cmd /k "set API_PORT=80&& backend\.venv\Scripts\python backend\main.py"
+echo [4/4] Sayt ishga tushmoqda (port 8000) ...
+start "NFT-Trader" cmd /k "set API_PORT=8000&& backend\.venv\Scripts\python backend\main.py"
 timeout /t 4 /nobreak >nul
-start http://localhost/
+start http://localhost:8000/
 
 echo.
-echo  SAYT    : http://localhost/
-echo  TELEFON : same Wi-Fi da  http://(PC IP)/   - IP: ipconfig
+echo  SAYT    : http://localhost:8000/
+echo  TELEFON : same Wi-Fi da  http://(PC IP):8000/   - IP: ipconfig
 echo  TOXTASH : ochilgan qora oynani yopish
 echo.
-echo  [!] Port 80 band bo'lsa (IIS/Skype): start.bat ni o'chirib ichida
-echo      API_PORT=8080 deb qo'ying va http://localhost:8080 oching
+echo  [!] Port 8000 band bo'lsa: API_PORT=8080 qilib o'zgartiring
 echo.
 pause

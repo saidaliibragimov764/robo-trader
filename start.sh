@@ -21,7 +21,7 @@ echo "[3/4] Frontend build (dist/) ..."
 npm run build
 
 echo "VITE_API_URL=" > .env   # sayt va API bitta manzilda (/api avtomatik shu serverga)
-PORT="${API_PORT:-80}"
+PORT="${API_PORT:-8000}"
 echo "[4/4] SAYT: http://localhost:$PORT/  (to'xtash: Ctrl+C)"
 echo "      Telefon (LAN): http://$(hostname -I 2>/dev/null | awk '{print $1}' || echo "<IP>"):${PORT}/"
 API_PORT="$PORT" exec backend/.venv/bin/python backend/main.py
