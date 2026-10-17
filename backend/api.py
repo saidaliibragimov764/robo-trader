@@ -8,17 +8,27 @@ GET  /api/bot/status | /api/collections
 POST /api/ingest/trade            (yangi savdo yozish — token kerak)
 POST /api/ingest/trade/close      (yopish — token kerak)
 POST /api/ingest/signal           (signal logi — token kerak)
+
+REZHIM "sayt + API bitta serverda":
+    npm run build  ->  dist/  paydo bo'lsa, FastAPI uni ham serv qiladi:
+    http://localhost/  = butun sayt (port 80'da), /api/* = ma'lumotlar.
+    Alohida Vite/nginx kerak emas.
 """
 from __future__ import annotations
 
+import os
 from typing import Literal
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 import db
 from config import settings
+
+DIST_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "dist")
 
 app = FastAPI(title="robo-trader API", version="1.0.0")
 
@@ -142,3 +152,22 @@ def ingest_signal(body: SignalIn):
 @app.get("/health")
 def health():
     return {"ok": True, "mode": settings.mode}
+
+
+# ------------------------------------------------------------------
+# Statik sayt: dist/ mavjud bo'lsa, frontend'ni ham shu server beradi
+# (http://localhost/ — Vite/nginx shart emas). Catch-all ENG OXIRDA bo'lishi shart.
+# ------------------------------------------------------------------
+if os.path.isdir(DIST_DIR):
+    _assets = os.path.join(DIST_DIR, "assets")
+    if os.path.isdir(_assets):
+        app.mount("/assets", StaticFiles(directory=_assets), name="assets")
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    def serve_spa(full_path: str):
+        if full_path.startswith(("api/", "assets/")) or full_path in ("health", "docs", "openapi.json"):
+            return JSONResponse({"detail": "Not Found"}, status_code=404)
+        candidate = os.path.normpath(os.path.join(DIST_DIR, full_path))
+        if full_path and candidate.startswith(DIST_DIR) and os.path.isfile(candidate):
+            return FileResponse(candidate)
+        return FileResponse(os.path.join(DIST_DIR, "index.html"))

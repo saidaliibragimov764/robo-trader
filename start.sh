@@ -1,33 +1,27 @@
 #!/usr/bin/env bash
-# NFT Trader — PC (Linux/macOS) va VPS uchun bir-bosish ishga tushirish.
-# Ishlatish:  ./start.sh
+# NFT Trader — bitta buyruqda to'liq sayt: http://localhost/ (yoki VPS IP)
+# Ishlatish:  ./start.sh          (port 80 uchun root/sudo kerak bo'lishi mumkin)
+#              API_PORT=8080 ./start.sh   (agar 80 band/taqiqlangan bo'lsa)
 set -e
 cd "$(dirname "$0")"
 
-command -v node   >/dev/null || { echo "[!] Node.js kerak: https://nodejs.org"; exit 1; }
+command -v node    >/dev/null || { echo "[!] Node.js kerak: https://nodejs.org"; exit 1; }
 command -v python3 >/dev/null || { echo "[!] Python3 kerak"; exit 1; }
 
-[ -d node_modules ] || { echo "[1/3] npm install ..."; npm install --no-audit --no-fund; }
+[ -d node_modules ] || { echo "[1/4] npm install ..."; npm install --no-audit --no-fund; }
 
 if [ ! -d backend/.venv ]; then
-  echo "[2/3] Python muhit + paketlar + demo data ..."
+  echo "[2/4] Python muhit + paketlar + demo data ..."
   python3 -m venv backend/.venv
   backend/.venv/bin/pip install -q -r backend/requirements.txt
   backend/.venv/bin/python backend/seed.py --demo --closed 70 --open 10
 fi
 
-echo "VITE_API_URL=" > .env   # nisbiy /api -> vite proxy (telefonda ham ishlaydi)
-echo "[3/3] Serverlar..."
+echo "[3/4] Frontend build (dist/) ..."
+npm run build
 
-backend/.venv/bin/python backend/main.py &
-BACK_PID=$!
-VITE_API_URL= npx vite --host 0.0.0.0 --port 5173 &
-SITE_PID=$!
-[ -x ./cloudflared ] && ./cloudflared tunnel --url http://localhost:5173 &
-
-echo ""
-echo "  LOCAL  : http://localhost:5173"
-echo "  TELEFON: http://$(hostname -I 2>/dev/null | awk '{print $1}'):5173 (LAN)"
-echo "  To'xtash: Ctrl+C"
-trap "kill $BACK_PID $SITE_PID 2>/dev/null; exit" INT TERM
-wait
+echo "VITE_API_URL=" > .env   # sayt va API bitta manzilda (/api avtomatik shu serverga)
+PORT="${API_PORT:-80}"
+echo "[4/4] SAYT: http://localhost:$PORT/  (to'xtash: Ctrl+C)"
+echo "      Telefon (LAN): http://$(hostname -I 2>/dev/null | awk '{print $1}' || echo "<IP>"):${PORT}/"
+API_PORT="$PORT" exec backend/.venv/bin/python backend/main.py
